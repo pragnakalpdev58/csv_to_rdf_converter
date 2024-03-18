@@ -1,5 +1,6 @@
-from csv_handler import *
 from csv_handler import csv_handling, start_watching_csv_folder
+from uploadtoserver import upload_ttl_to_fuseki
+from imports import os
 
 def csv_to_rdf_conversion(column_labels, csv_folder, classified_csv,rdf_folder):
     csv_handling(column_labels, csv_folder, classified_csv)
@@ -11,6 +12,11 @@ if __name__ == "__main__":
     csv_folder = 'csv'
     classified_csv = 'classified_csv'
     os.makedirs(classified_csv, exist_ok=True)
-    rdf_folder = 'http://localhost:3030/#/dataset/rdf_data/upload'
+    rdf_folder = 'rdf_folder'
     os.makedirs(rdf_folder, exist_ok=True)
     csv_to_rdf_conversion(column_labels, csv_folder, classified_csv,rdf_folder)
+    fuseki_url = 'http://localhost:3030/rdf_data/data'
+    for filename in os.listdir(rdf_folder):
+        if filename.endswith(".ttl"):
+            file_path = os.path.join(rdf_folder, filename)
+            upload_ttl_to_fuseki(fuseki_url, file_path)

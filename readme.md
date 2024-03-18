@@ -1,4 +1,3 @@
-```markdown
 # Project Execution Instructions
 
 ## Prerequisites
@@ -18,10 +17,3 @@ Note: Adjust the length of the list in the code to match your preferences. If em
 Upon completion, the script will automatically terminate, providing classified CSV and an RDF/XML file as output.
 
 Follow these instructions for a seamless execution of the project.
-```
-
- 1804  snap info docker
- 1805  sudo apt install docker-compose
- 1806  docker-compose build --build-arg JENA_VERSION=3.16.0
- 1807  docker pull blankdots/jena-fuseki
- 1808  docker run -p 3030:3030 blankdots/jena-fuseki
