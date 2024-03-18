@@ -1,3 +1,4 @@
+```markdown
 # Project Execution Instructions
 
 ## Prerequisites
@@ -17,3 +18,4 @@ Note: Adjust the length of the list in the code to match your preferences. If em
 Upon completion, the script will automatically terminate, providing classified CSV and an RDF/XML file as output.
 
 Follow these instructions for a seamless execution of the project.
+```
