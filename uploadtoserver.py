@@ -1,7 +1,8 @@
-from imports import requests
+# Import the necessary library
+from imports import requests  # Assuming 'imports' is a module containing the 'requests' library
 
+# Function to upload a .ttl file to a Jena Fuseki server
 def upload_ttl_to_fuseki(fuseki_url, file_path):
-
     # Read the .ttl file
     with open(file_path, 'rb') as file:
         ttl_content = file.read()
@@ -21,10 +22,10 @@ def upload_ttl_to_fuseki(fuseki_url, file_path):
         print('Error uploading file:', response.text)
 
 if __name__ == "__main__":
-    # Define the Fuseki server URL and dataset name
-    ttl_folder = 'rdf_folder'
-    fuseki_url = 'http://localhost:3030/rdf_data/data'
-    for filename in os.listdir(rdf_folder):
-        if filename.endswith(".ttl"):
-            file_path = os.path.join(rdf_folder, filename)
-            upload_ttl_to_fuseki(fuseki_url, file_path)
+    # Define the Fuseki server URL and folder containing .ttl files
+    rdf_folder = 'rdf_folder'  # Assuming 'rdf_folder' is the directory containing .ttl files
+    fuseki_url = 'http://localhost:3030/rdf_data/data'  # URL for the Fuseki server and dataset
+    for filename in os.listdir(rdf_folder):  # Iterate through files in the directory
+        if filename.endswith(".ttl"):  # Check if the file is a .ttl file
+            file_path = os.path.join(rdf_folder, filename)  # Get the full file path
+            upload_ttl_to_fuseki(fuseki_url, file_path)  # Upload the .ttl file to Fuseki

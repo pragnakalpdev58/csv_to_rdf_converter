@@ -29,7 +29,6 @@ def create_subject_and_triple(idx, row, patch):
 
 def csv_to_rdf(csv_file_path, rdf_file_path):
     try:
-
         # Create an RDF graph
         graph = Graph()
         # Define namespaces
@@ -43,17 +42,17 @@ def csv_to_rdf(csv_file_path, rdf_file_path):
             csvreader = csv.DictReader(csvfile)
             triples_batch = []
 
+            # Iterate through each row in the CSV file
             for idx, row in enumerate(csvreader):
+                # Create subject and triple for each row
                 sub, ride_quality, latitude, longitude = create_subject_and_triple(idx, row, patch)
                 if sub is not None:
+                    # Create RDF triples and add them to the batch
                     subject = patch[f"{idx + 1}"]
                     triples_batch.extend([(subject, RDF.type, sub),
-                                              (subject, patch.latitude, latitude),
-                                              (subject, patch.longitude, longitude),
-                                              (subject, rq.PatchQuality, Literal(ride_quality))])
-
-                else:
-                    pass
+                                          (subject, patch.latitude, latitude),
+                                          (subject, patch.longitude, longitude),
+                                          (subject, rq.PatchQuality, Literal(ride_quality))])
 
             # Add the batch of triples to the graph
             graph += triples_batch
@@ -66,12 +65,12 @@ def csv_to_rdf(csv_file_path, rdf_file_path):
 
 def process_file(csv_folder, rdf_folder, filename):
     try:
+        # Generate RDF file path
         rdf_file_name = os.path.splitext(filename)[0]
         rdf_file_path = os.path.join(rdf_folder, f"{rdf_file_name}.ttl")
 
-        with concurrent.futures.ProcessPoolExecutor(max_workers=2) as executor:
-            csv_to_rdf_futures = [executor.submit(csv_to_rdf, os.path.join(csv_folder, filename), rdf_file_path)]
-        concurrent.futures.wait(csv_to_rdf_futures)
+        # Convert CSV to RDF
+        csv_to_rdf(csv_file_path=os.path.join(csv_folder, filename), rdf_file_path=rdf_file_path)
 
     except Exception as e:
         print(f"Error in process_file for {filename}: {e}")  # Log error
@@ -81,6 +80,7 @@ def run_script(csv_folder, rdf_folder):
         start_time = time.time()
         os.makedirs(rdf_folder, exist_ok=True)
 
+        # Process CSV files concurrently
         with concurrent.futures.ProcessPoolExecutor(max_workers=cpu_count()) as executor:
             futures = [executor.submit(process_file, csv_folder, rdf_folder, filename)
                        for filename in os.listdir(csv_folder) if filename.lower().endswith((".csv"))]
@@ -96,8 +96,11 @@ if __name__ == "__main__":
     try:
         start_time = time.time()
 
+        # Define input and output folders
         csv_folder = "classified_csv"
         rdf_folder = "rdf_files"
+
+        # Run the script to convert CSV files to RDF
         run_script(csv_folder, rdf_folder)
 
         end_time = time.time()
