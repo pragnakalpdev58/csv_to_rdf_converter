@@ -1,4 +1,4 @@
-```markdown
+````markdown
 # Project Execution Instructions
 
 ## Prerequisites
@@ -10,7 +10,6 @@ Ensure that the sensor data is logged into a CSV file. If the logging device is 
    ```bash
    pip install -r requirements.txt
    ```
-
 ## Execution
 Run the main script, `main.py`. If logging device is not available , run `autoadd.py` after executing `main.py`.
 Note: Adjust the length of the list in the code to match your preferences. If emulating a sensor, set the list value to 1.
@@ -18,4 +17,4 @@ Note: Adjust the length of the list in the code to match your preferences. If em
 Upon completion, the script will automatically terminate, providing classified CSV and an RDF/XML file as output.
 
 Follow these instructions for a seamless execution of the project.
-```
+````
