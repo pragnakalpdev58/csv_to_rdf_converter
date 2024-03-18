@@ -22,8 +22,9 @@ def upload_ttl_to_fuseki(fuseki_url, file_path):
 
 if __name__ == "__main__":
     # Define the Fuseki server URL and dataset name
-    fuseki_url = 'http://localhost:3030/rdf_data/data'
     ttl_folder = 'rdf_folder'
-    for filename in os.listdir(ttl_folder):
+    fuseki_url = 'http://localhost:3030/rdf_data/data'
+    for filename in os.listdir(rdf_folder):
         if filename.endswith(".ttl"):
+            file_path = os.path.join(rdf_folder, filename)
             upload_ttl_to_fuseki(fuseki_url, file_path)
