@@ -20,7 +20,7 @@ def upload_ttl_to_fuseki(fuseki_url, file_path):
         print(f"If:{fuseki_url}")
     elif response.status_code == 201:
         print('File uploaded successfully!')
-        print(f"If:{fuseki_url}")
+        print(f"Elif:{fuseki_url}")
 
     else:
         print('Error uploading file:', response.text)

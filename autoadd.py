@@ -19,7 +19,7 @@ def write_csv(file_path, header, rows):
 
 # Main function
 def main():
-    original_file_path = 'csv_randomfiles/test.csv'
+    original_file_path = 'csv_randomfiles/0jJ4OteJ.csv'
     target_file_path = 'csv/test.csv'
 
     header, data = read_csv(original_file_path)
