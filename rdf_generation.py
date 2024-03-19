@@ -83,7 +83,9 @@ def csv_to_rdf(csv_file_path, rdf_folder):
 
 def process_file(csv_folder, rdf_folder, filename):
     try:
-        csv_to_rdf(csv_file_path=os.path.join(csv_folder, filename), rdf_folder=rdf_folder)
+        csv_file_path=os.path.join(csv_folder, filename)
+        rdf_folder=rdf_folder
+        csv_to_rdf(csv_file_path,rdf_folder)
 
     except Exception as e:
         print(f"Error in process_file for {filename}: {e}")  # Log error
