@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
             rdf_local_copy_path=os.path.join(rdf_local_copy, filename)
 
-            # upload_ttl_to_fuseki(fuseki_url=((f"{fuseki_url}?graph={named_graph_uri}/{filename}")), file_path=file_path)
+            upload_ttl_to_fuseki(fuseki_url=((f"{fuseki_url}?graph={named_graph_uri}/{filename}")), file_path=file_path)
 
             rdf_local_copy_path= f"{rdf_local_copy_path}.ttl"
 
