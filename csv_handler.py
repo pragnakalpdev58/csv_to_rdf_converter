@@ -168,7 +168,7 @@ def csv_handling(column_labels, csv_folder, classified_csv):
     except FileNotFoundError as e:
         print(f"Error: {e}")
 
-def start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_folder, timeout_seconds=5):
+def start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_folder, no_change_detected_time=5):
     """
     Monitors a CSV folder for changes and processes the files accordingly.
 
@@ -177,7 +177,7 @@ def start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_fol
     - csv_folder (str): Folder containing CSV files.
     - classified_csv (str): Folder to save processed CSV files.
     - rdf_folder (str): Folder to save RDF files.
-    - timeout_seconds (int): Timeout duration for checking changes.
+    - no_change_detected_time (int): Timeout duration for checking changes.
 
     Raises:
     - KeyboardInterrupt: If the user interrupts the program.
@@ -196,8 +196,8 @@ def start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_fol
                 current_time = time.time()
 
                 # Check for changes every second
-                if current_time - last_change_time > timeout_seconds:
-                    print(f'No changes detected for {timeout_seconds} seconds. Stopping the observer.')
+                if current_time - last_change_time > no_change_detected_time:
+                    print(f'No changes detected for {no_change_detected_time} seconds. Stopping the observer.')
                     break
 
                 # Sleep for 1 second

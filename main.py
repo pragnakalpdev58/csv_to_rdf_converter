@@ -15,8 +15,12 @@ if __name__ == "__main__":
     rdf_folder = 'rdf_folder'
     os.makedirs(rdf_folder, exist_ok=True)
     csv_to_rdf_conversion(column_labels, csv_folder, classified_csv,rdf_folder)
-    fuseki_url = 'http://localhost:3030/rdf_data/data'
-    # for filename in os.listdir(rdf_folder):
-    #     if filename.endswith(".ttl"):
-    #         file_path = os.path.join(rdf_folder, filename)
-    #         upload_ttl_to_fuseki(fuseki_url, file_path)
+    fuseki_url = 'http://localhost:3030/test/data'
+    named_graph_uri = 'http://www.semanticweb.org/viren/ontologies/2024/0/RideQuality'  # Specify the named graph URI
+
+    for filename in os.listdir(rdf_folder):
+        if filename.endswith(".ttl"):
+            file_path = os.path.join(rdf_folder, filename)
+            filename = os.path.splitext(filename)[0]
+            filename = filename.replace(' ', '_')
+            upload_ttl_to_fuseki(fuseki_url=((f"{fuseki_url}?graph={named_graph_uri}/{filename}")), file_path=file_path)
