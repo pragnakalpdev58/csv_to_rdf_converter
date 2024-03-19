@@ -16,7 +16,7 @@ if __name__ == "__main__":
     os.makedirs(rdf_folder, exist_ok=True)
     csv_to_rdf_conversion(column_labels, csv_folder, classified_csv,rdf_folder)
     fuseki_url = 'http://localhost:3030/rdf_data/data'
-    for filename in os.listdir(rdf_folder):
-        if filename.endswith(".ttl"):
-            file_path = os.path.join(rdf_folder, filename)
-            upload_ttl_to_fuseki(fuseki_url, file_path)
+    # for filename in os.listdir(rdf_folder):
+    #     if filename.endswith(".ttl"):
+    #         file_path = os.path.join(rdf_folder, filename)
+    #         upload_ttl_to_fuseki(fuseki_url, file_path)

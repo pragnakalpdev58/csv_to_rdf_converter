@@ -58,7 +58,7 @@ def csv_to_rdf(csv_file_path, rdf_file_path):
             graph += triples_batch
 
         # Serialize the entire graph to the RDF file
-        graph.serialize(rdf_file_path, format='turtle')
+        graph.serialize(rdf_file_path, format='xml')
 
     except Exception as e:
         print(f"Error in csv_to_rdf: {e}")  # Log error
@@ -67,7 +67,7 @@ def process_file(csv_folder, rdf_folder, filename):
     try:
         # Generate RDF file path
         rdf_file_name = os.path.splitext(filename)[0]
-        rdf_file_path = os.path.join(rdf_folder, f"{rdf_file_name}.ttl")
+        rdf_file_path = os.path.join(rdf_folder, f"{rdf_file_name}.rdf")
 
         # Convert CSV to RDF
         csv_to_rdf(csv_file_path=os.path.join(csv_folder, filename), rdf_file_path=rdf_file_path)
