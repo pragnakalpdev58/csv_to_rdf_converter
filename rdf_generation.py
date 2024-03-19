@@ -27,72 +27,53 @@ def create_subject_and_triple(idx, row, patch):
         print(f"Error in create_subject_and_triple: {e}")  # Log error
         return None, None, None, None  # Return None for all values in case of error
 
+road_section_list = []
 def csv_to_rdf(csv_file_path, rdf_folder):
     try:
         # rdf_file_name = os.path.splitext(filename)[0]
         df = pd.read_csv(csv_file_path)
-        speed = df['speed'].tolist()
-        if len(speed) > 0:
+        lat = df['lat'].tolist()
+        if len(lat) > 0:
             first_index = 0
-            last_index = len(speed) - 1
+            last_index = len(lat) - 1
+            # print("last_index",last_index)
 
         # Create an RDF graph
         graph = Graph()
         # Define namespaces
         patch = Namespace("http://www.semanticweb.org/viren/ontologies/2024/0/RideQuality#")
-        rq = Namespace("http://www.semanticweb.org/viren/ontologies/2024/0/RideQuality#RideQuality")
         graph.bind("patch", patch)
-        graph.bind("rq", rq)
 
         # Open and read the CSV file
         with open(csv_file_path, newline='') as csvfile:
             csvreader = csv.DictReader(csvfile)
             triples_batch = []
             for idx, row in enumerate(csvreader):
-                if idx != first_index and idx != last_index:
+                if idx == first_index:
                     sub, ride_quality, latitude, longitude = create_subject_and_triple(idx, row, patch)
-                    if sub is not None:
-                        subject = patch[f"{idx + 1}"]
-                        triples_batch.extend([(subject, RDF.type, sub),
-                                              (subject, patch.latitude, latitude),
-                                              (subject, patch.longitude, longitude),
-                                              (subject, rq.PatchQuality, Literal(ride_quality))])
-
-                elif idx == first_index:
-                    sub, ride_quality, latitude, longitude = create_subject_and_triple(idx, row, patch)
-                    if sub is not None:
-
-                        subject = patch[f"{idx + 1}"]
-                        triples_batch.extend([(subject, RDF.type, sub),
-                                              (subject, patch.latitude, latitude),
-                                              (subject, patch.longitude, longitude),
-                                              (subject, rq.PatchQuality, Literal(ride_quality))])
-                        latitude_value = latitude.value  # Extract the value from the RDFLib Literal
-                        longitude_value = longitude.value  # Extract the value from the RDFLib Literal
-                        test_tuple = (latitude_value,longitude_value)
-                        res = str(test_tuple).replace(' ', '')
-                        road_section_list.append(test_tuple)
-                        # print((latitude_value,longitude_value))
+                    latitude_value_start = latitude.value  # Extract the value from the RDFLib Literal
+                    longitude_value_start = longitude.value  # Extract the value from the RDFLib Literal
+                    road_section_list.append((latitude_value_start,longitude_value_start))
 
                 elif idx == last_index:
                     sub, ride_quality, latitude, longitude = create_subject_and_triple(idx, row, patch)
-                    if sub is not None:
-                        subject = patch[f"{idx + 1}"]
-                        triples_batch.extend([(subject, RDF.type, sub),
-                                              (subject, patch.latitude, latitude),
-                                              (subject, patch.longitude, longitude),
-                                              (subject, rq.PatchQuality, Literal(ride_quality))])
-                        test_tuple = (latitude_value,longitude_value)
-                        res = str(test_tuple).replace(' ', '')
-                        road_section_list.append(test_tuple)
-                        # print((latitude_value,longitude_value))
+                    latitude_value_end = latitude.value  # Extract the value from the RDFLib Literal
+                    longitude_value_end = longitude.value  # Extract the value from the RDFLib Literal
+                    road_section_list.append((latitude_value_end,longitude_value_end))
 
                 else:
-                    pass
+                    print("This is else condition in csv_to_rdf.")
 
+                subject = patch[f"{idx + 1}"]
+                sub, ride_quality, latitude, longitude = create_subject_and_triple(idx, row, patch)
+                triples_batch.extend([(subject, RDF.type, sub),
+                                              (subject, patch.latitude, latitude),
+                                              (subject, patch.longitude, longitude),
+                                              (subject, patch.PatchQuality, Literal(ride_quality))])
             # Add the batch of triples to the graph
             graph += triples_batch
             # Serialize the entire graph to the RDF file
+            print(road_section_list)
         rdf_file_path = os.path.join(rdf_folder, f"RoadSection_Start:{road_section_list[0]}_End:{road_section_list[1]}.ttl")
         # print(road_section_list)
         graph.serialize(rdf_file_path, format='turtle')
@@ -106,7 +87,7 @@ def process_file(csv_folder, rdf_folder, filename):
 
     except Exception as e:
         print(f"Error in process_file for {filename}: {e}")  # Log error
-road_section_list = []
+
 def run_script(csv_folder, rdf_folder):
     try:
         start_time = time.time()
