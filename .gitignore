@@ -123,6 +123,7 @@ celerybeat.pid
 **.csv
 **.ttl
 **.rdf
+autoadd.py
 
 # Environments
 .env
