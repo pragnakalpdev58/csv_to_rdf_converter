@@ -1,7 +1,7 @@
 from imports import *
-from rdf_generation import run_script
+from rdf_generation import rdf_generation
 
-def add_row_at_top(csv_file_path, new_row):
+def data_classification(csv_file_path, new_row):
     """
     Adds a new row at the top of the CSV file.
 
@@ -23,7 +23,7 @@ def add_row_at_top(csv_file_path, new_row):
     except FileNotFoundError as e:
         print(f"Error: {csv_file_path} not found. {e}")
 
-def remove_colm(csv_file_path):
+def data_cleaning(csv_file_path):
     """
     Removes columns from the CSV file.
 
@@ -161,8 +161,8 @@ def csv_handling(column_labels, csv_folder, classified_csv):
                 # Copy the original file to the destination folder
                 shutil.copy2(csv_file_path, destination_path)
                 # Perform modifications on the copied file
-                remove_colm(destination_path)
-                add_row_at_top(destination_path, column_labels)
+                data_cleaning(destination_path)
+                data_classification(destination_path, column_labels)
                 remove_duplicates(destination_path)
                 # classification(destination_path, destination_path)
     except FileNotFoundError as e:
@@ -216,7 +216,7 @@ def start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_fol
                 csv_file_path = os.path.join(csv_folder, filename)
                 destination_path = os.path.join(classified_csv, filename)
                 classification(destination_path, destination_path)
-                run_script(classified_csv, rdf_folder)
+                rdf_generation(classified_csv, rdf_folder)
                 event_handler.cleanup_original(csv_file_path)
 
         observer.stop()
@@ -253,8 +253,8 @@ class MyHandler(FileSystemEventHandler):
 
                 # Perform modifications on the copied file
                 shutil.copy2(csv_file_path, destination_path)
-                remove_colm(destination_path)
-                add_row_at_top(destination_path, self.column_labels)
+                data_cleaning(destination_path)
+                data_classification(destination_path, self.column_labels)
                 remove_duplicates(destination_path)
                 # classification(destination_path, destination_path)
 
@@ -289,15 +289,3 @@ class MyHandler(FileSystemEventHandler):
             print(f'Original file {csv_file_path} deleted.')
         except Exception as e:
             print(f'Error deleting original file {csv_file_path}: {e}')
-
-if __name__ == "__main__":
-    column_labels = ['time', 'speed', 'lat', 'lon']
-    csv_folder = 'csv'
-    classified_csv = 'classified_csv'
-    rdf_folder = "rdf_files"
-
-    # Initial processing of existing files
-    csv_handling(column_labels, csv_folder, classified_csv)
-
-    # Start watching for changes in the original files
-    start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_folder)

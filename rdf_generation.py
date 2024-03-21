@@ -62,7 +62,8 @@ def csv_to_rdf(csv_file_path, rdf_folder):
                     road_section_list.append((latitude_value_end,longitude_value_end))
 
                 else:
-                    print("This is else condition in csv_to_rdf.")
+                    # print("This is else condition in csv_to_rdf.")
+                    pass
 
                 subject = patch[f"{idx + 1}"]
                 sub, ride_quality, latitude, longitude = create_subject_and_triple(idx, row, patch)
@@ -90,7 +91,7 @@ def process_file(csv_folder, rdf_folder, filename):
     except Exception as e:
         print(f"Error in process_file for {filename}: {e}")  # Log error
 
-def run_script(csv_folder, rdf_folder):
+def rdf_generation(csv_folder, rdf_folder):
     try:
         start_time = time.time()
         os.makedirs(rdf_folder, exist_ok=True)
@@ -105,24 +106,4 @@ def run_script(csv_folder, rdf_folder):
         print(f"Time taken for csv to rdf conversion: {end_time-start_time} seconds")
 
     except Exception as e:
-        print(f"Error in run_script: {e}")  # Log error
-
-if __name__ == "__main__":
-    try:
-        start_time = time.time()
-
-        # Define input and output folders
-        csv_folder = "classified_csv"
-        rdf_folder = "rdf_files"
-
-        # Run the script to convert CSV files to RDF
-        run_script(csv_folder, rdf_folder)
-
-        end_time = time.time()
-        execution_time = end_time - start_time
-        print("Start Time =", start_time)
-        print("End Time =", end_time)
-        print("Execution Time =", execution_time)
-
-    except Exception as e:
-        print(f"Error in main script: {e}")  # Log error
+        print(f"Error in rdf_generation: {e}")  # Log error

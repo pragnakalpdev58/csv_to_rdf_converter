@@ -7,8 +7,6 @@ This project automates the process of converting CSV data into RDF format and in
 - [Project Overview](#project-overview)
 - [Components](#components)
 - [How to Run](#how-to-run)
-- [Dependencies](#dependencies)
-- [License](#license)
 
 ## Project Overview
 
