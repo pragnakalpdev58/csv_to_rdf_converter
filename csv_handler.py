@@ -215,9 +215,6 @@ def start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_fol
             if filename.lower().endswith((".csv", ".CSV")):
                 csv_file_path = os.path.join(csv_folder, filename)
                 destination_path = os.path.join(classified_csv, filename)
-                # classification(destination_path, destination_path)
-                # rdf_generation(classified_csv, rdf_folder)
-                # end_filename(destination_path)
                 event_handler.cleanup_original(csv_file_path)
 
         observer.stop()
