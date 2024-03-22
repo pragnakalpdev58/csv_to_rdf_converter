@@ -1,7 +1,7 @@
 from imports import *
 from rdf_generation import rdf_generation
 
-def data_classification(csv_file_path, new_row):
+def data_labeling(csv_file_path, new_row):
     """
     Adds a new row at the top of the CSV file.
 
@@ -162,9 +162,9 @@ def csv_handling(column_labels, csv_folder, classified_csv):
                 shutil.copy2(csv_file_path, destination_path)
                 # Perform modifications on the copied file
                 data_cleaning(destination_path)
-                data_classification(destination_path, column_labels)
+                data_labeling(destination_path, column_labels)
                 remove_duplicates(destination_path)
-                # classification(destination_path, destination_path)
+                classification(destination_path, destination_path)
     except FileNotFoundError as e:
         print(f"Error: {e}")
 
@@ -183,7 +183,7 @@ def start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_fol
     - KeyboardInterrupt: If the user interrupts the program.
     """
     try:
-        event_handler = MyHandler(column_labels, classified_csv)
+        event_handler = MyHandler(column_labels, classified_csv, rdf_folder)
         observer = Observer()
         observer.schedule(event_handler, path=csv_folder, recursive=False)
         observer.start()
@@ -215,8 +215,9 @@ def start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_fol
             if filename.lower().endswith((".csv", ".CSV")):
                 csv_file_path = os.path.join(csv_folder, filename)
                 destination_path = os.path.join(classified_csv, filename)
-                classification(destination_path, destination_path)
-                rdf_generation(classified_csv, rdf_folder)
+                # classification(destination_path, destination_path)
+                # rdf_generation(classified_csv, rdf_folder)
+                # end_filename(destination_path)
                 event_handler.cleanup_original(csv_file_path)
 
         observer.stop()
@@ -224,13 +225,29 @@ def start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_fol
     except Exception as e:
         print(f"Error in start_watching_csv_folder: {e}")
 
+def end_filename(destination_path):
+    road_section_list = []
+    for filename in os.listdir(destination_path):
+        if filename.endswith(".csv"):
+            classified_csv_path = os.path.join(destination_path, filename)
+            with open(classified_csv_path, newline='') as csvfile:
+                csvreader = csv.DictReader(csvfile)
+                rows = list(csvreader)  # Convert to list for indexing
+                if rows:
+                    first_row = rows[0]
+                    last_row = rows[-1]
+                    road_section_list.append((first_row['lat'], first_row['lon']))
+                    road_section_list.append((last_row['lat'], last_row['lon']))
+            return road_section_list
+
 class MyHandler(FileSystemEventHandler):
     """
     Custom event handler for monitoring changes in CSV files.
     """
-    def __init__(self, column_labels, classified_csv):
+    def __init__(self, column_labels, classified_csv,rdf_folder):
         self.column_labels = column_labels
         self.classified_csv = classified_csv
+        self.rdf_folder = rdf_folder
         self.changes_detected = False
 
     def on_modified(self, event):
@@ -254,9 +271,10 @@ class MyHandler(FileSystemEventHandler):
                 # Perform modifications on the copied file
                 shutil.copy2(csv_file_path, destination_path)
                 data_cleaning(destination_path)
-                data_classification(destination_path, self.column_labels)
+                data_labeling(destination_path, self.column_labels)
                 remove_duplicates(destination_path)
-                # classification(destination_path, destination_path)
+                classification(destination_path, destination_path)
+                rdf_generation(self.classified_csv, self.rdf_folder)
 
                 self.changes_detected = True
         except Exception as e:

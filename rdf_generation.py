@@ -1,31 +1,32 @@
 from imports import *  # Import necessary modules
 
-def create_subject_and_triple(idx, row, patch):
+def create_subject_and_triple(idx, row, PATCH):
     try:
         # Extract latitude, longitude, and movement classification from the row
         latitude = Literal(row['lat'])
         longitude = Literal(row['lon'])
         movement_classification = row["MovementClassification"]
 
-        # Determine ride quality and corresponding patch
+        # Determine ride quality and corresponding PATCH
         if movement_classification in ("High Acceleration", "Normal Acceleration"):
             ride_quality = movement_classification
-            sub = patch.PatchGoodToGo
+            sub = PATCH.PatchGoodToGo
         elif movement_classification == "Normal Braking":
             ride_quality = movement_classification
-            sub = patch.PatchDriveCaution
+            sub = PATCH.PatchDriveCaution
         elif movement_classification == "High Braking":
             ride_quality = movement_classification
-            sub = patch.PatchWithBumps
+            sub = PATCH.PatchWithBumps
         else:
             ride_quality = movement_classification
-            sub = patch.PatchGoodToGo
+            sub = PATCH.PatchGoodToGo
 
-        return sub, ride_quality, latitude, longitude  # Return patch, ride quality, latitude, and longitude
+        return sub, ride_quality, latitude, longitude  # Return PATCH, ride quality, latitude, and longitude
 
     except Exception as e:
         print(f"Error in create_subject_and_triple: {e}")  # Log error
         return None, None, None, None  # Return None for all values in case of error
+
 
 road_section_list = []
 def csv_to_rdf(csv_file_path, rdf_folder):
@@ -41,43 +42,43 @@ def csv_to_rdf(csv_file_path, rdf_folder):
         # Create an RDF graph
         graph = Graph()
         # Define namespaces
-        patch = Namespace("http://www.semanticweb.org/viren/ontologies/2024/0/RideQuality#")
-        graph.bind("patch", patch)
+        PATCH = Namespace("http://www.semanticweb.org/viren/ontologies/2024/0/RideQuality#")
+        graph.bind("PATCH", PATCH)
 
         # Open and read the CSV file
         with open(csv_file_path, newline='') as csvfile:
             csvreader = csv.DictReader(csvfile)
             triples_batch = []
-            for idx, row in enumerate(csvreader):
-                if idx == first_index:
-                    sub, ride_quality, latitude, longitude = create_subject_and_triple(idx, row, patch)
-                    latitude_value_start = latitude.value  # Extract the value from the RDFLib Literal
-                    longitude_value_start = longitude.value  # Extract the value from the RDFLib Literal
-                    road_section_list.append((latitude_value_start,longitude_value_start))
+            idx = 0
+            while True:
+                rows = []
+                while len(rows) < 5:
+                    try:
+                        row = next(csvreader)
+                        rows.append(row)
+                    except StopIteration:
+                        break
 
-                elif idx == last_index:
-                    sub, ride_quality, latitude, longitude = create_subject_and_triple(idx, row, patch)
-                    latitude_value_end = latitude.value  # Extract the value from the RDFLib Literal
-                    longitude_value_end = longitude.value  # Extract the value from the RDFLib Literal
-                    road_section_list.append((latitude_value_end,longitude_value_end))
+                if not rows:
+                    break  # No more rows left to read
 
-                else:
-                    # print("This is else condition in csv_to_rdf.")
-                    pass
+                for row in rows:
+                    sub, ride_quality, latitude, longitude = create_subject_and_triple(idx, row, PATCH)
+                    latitude = Literal(row['lat'], datatype=XSD.decimal)
+                    longitude = Literal(row['lon'], datatype=XSD.decimal)
+                    subject = PATCH[f"{idx + 1}"]
+                    triples_batch.extend([(subject, RDF.type, sub),
+                                          (subject, PATCH["hasLatitude"], latitude),
+                                          (subject, PATCH["hasLongitude"], longitude),
+                                          (subject, PATCH["hasPatchQality"], Literal(ride_quality))])
+                    idx += 1
 
-                subject = patch[f"{idx + 1}"]
-                sub, ride_quality, latitude, longitude = create_subject_and_triple(idx, row, patch)
-                triples_batch.extend([(subject, RDF.type, sub),
-                                              (subject, patch.latitude, latitude),
-                                              (subject, patch.longitude, longitude),
-                                              (subject, patch.PatchQuality, Literal(ride_quality))])
             # Add the batch of triples to the graph
             graph += triples_batch
-            # Serialize the entire graph to the RDF file
-            print(road_section_list)
-        rdf_file_path = os.path.join(rdf_folder, f"RoadSection_Start:{road_section_list[0]}_End:{road_section_list[1]}.ttl")
-        # print(road_section_list)
-        graph.serialize(rdf_file_path, format='turtle')
+
+            rdf_file_path = os.path.join(rdf_folder, "temp.ttl")
+
+        graph.serialize(rdf_file_path,format='turtle')
 
     except Exception as e:
         print(f"Error in csv_to_rdf: {e}")  # Log error

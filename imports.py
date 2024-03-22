@@ -9,7 +9,7 @@ import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import shutil
-import xml.etree.ElementTree as ET
-from rdflib import Graph, Literal, Namespace, RDF
+from rdflib import Graph, Literal, Namespace, URIRef, BNode
+from rdflib.namespace import RDF, XSD
 import threading
 import requests
