@@ -1,5 +1,6 @@
 from imports import *
-from rdf_generation import rdf_generation
+from rdf_generator import rdf_generation
+from uploadtoserver import upload_ttl_to_fuseki
 
 def data_labeling(csv_file_path, new_row):
     """
@@ -168,7 +169,13 @@ def csv_handling(column_labels, csv_folder, classified_csv):
     except FileNotFoundError as e:
         print(f"Error: {e}")
 
-def start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_folder, no_change_detected_time=5):
+def ttl_upload(rdf_local_copy_path):
+    upload_url = 'https://4875-2401-4900-1f3e-8fff-00-1a7-cdab.ngrok-free.app/api/upload'
+
+    files = {'file': open(rdf_local_copy_path, 'rb')}
+    response = requests.post(upload_url, files=files)
+
+def start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_folder, rdf_local_copy, no_change_detected_time=5):
     """
     Monitors a CSV folder for changes and processes the files accordingly.
 
@@ -197,10 +204,24 @@ def start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_fol
 
                 # Check for changes every second
                 if current_time - last_change_time > no_change_detected_time:
-                    print(f'No changes detected for {no_change_detected_time} seconds. Stopping the observer.')
-                    break
+                    # print(f'No changes detected for {no_change_detected_time} seconds. Stopping the observer.')
+                    for filename in os.listdir(csv_folder):
+                        if filename.lower().endswith((".csv", ".CSV")):
+                            csv_file_path = os.path.join(csv_folder, filename)
+                            destination_path = os.path.join(classified_csv, filename)
 
-                # Sleep for 1 second
+                    for filename in os.listdir(rdf_folder):
+                        if filename.endswith(".ttl"):
+                            temp_file_path = os.path.join(rdf_folder, filename)
+                            road_section_list = end_filename(classified_csv)
+                            rdf_local_copy_filename = f"RoadSection_Start:{road_section_list[0]}_End:{road_section_list[1]}.ttl"
+                            rdf_local_copy_path = os.path.join(rdf_local_copy, rdf_local_copy_filename)
+                            shutil.move(temp_file_path,rdf_local_copy_path)
+                            rdf_local_copy_filename = rdf_local_copy_filename.replace(' ', '')
+                            # upload_ttl_to_fuseki(rdf_local_copy_path,rdf_local_copy_filename)
+                            ttl_upload(rdf_local_copy_path)
+                            event_handler.cleanup_original(csv_file_path)
+
                 time.sleep(1)
 
                 # Check if any changes have occurred
@@ -217,8 +238,6 @@ def start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_fol
                 destination_path = os.path.join(classified_csv, filename)
                 event_handler.cleanup_original(csv_file_path)
 
-        observer.stop()
-        observer.join()
     except Exception as e:
         print(f"Error in start_watching_csv_folder: {e}")
 
@@ -259,7 +278,7 @@ class MyHandler(FileSystemEventHandler):
                 return
 
             if event.event_type == 'modified':
-                print(f'File {event.src_path} has been modified. Processing...')
+                # print(f'File {event.src_path} has been modified. Processing...')
 
                 # Process the modified file
                 csv_file_path = event.src_path

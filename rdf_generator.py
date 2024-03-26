@@ -1,4 +1,4 @@
-from imports import *  # Import necessary modules
+from imports import *
 
 def create_subject_and_triple(idx, row, PATCH):
     try:
@@ -104,7 +104,7 @@ def rdf_generation(csv_folder, rdf_folder):
 
         concurrent.futures.wait(futures)
         end_time = time.time()
-        print(f"Time taken for csv to rdf conversion: {end_time-start_time} seconds")
+        # print(f"Time taken for csv to rdf conversion: {end_time-start_time} seconds")
 
     except Exception as e:
         print(f"Error in rdf_generation: {e}")  # Log error
