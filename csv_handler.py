@@ -170,7 +170,7 @@ def csv_handling(column_labels, csv_folder, classified_csv):
         print(f"Error: {e}")
 
 def ttl_upload(rdf_local_copy_path):
-    upload_url = 'https://4875-2401-4900-1f3e-8fff-00-1a7-cdab.ngrok-free.app/api/upload'
+    upload_url = 'https://1292-2401-4900-1f3e-8fff-00-1a7-cdab.ngrok-free.app/api/upload'
 
     files = {'file': open(rdf_local_copy_path, 'rb')}
     response = requests.post(upload_url, files=files)
@@ -218,7 +218,7 @@ def start_watching_csv_folder(column_labels, csv_folder, classified_csv, rdf_fol
                             rdf_local_copy_path = os.path.join(rdf_local_copy, rdf_local_copy_filename)
                             shutil.move(temp_file_path,rdf_local_copy_path)
                             rdf_local_copy_filename = rdf_local_copy_filename.replace(' ', '')
-                            # upload_ttl_to_fuseki(rdf_local_copy_path,rdf_local_copy_filename)
+                            upload_ttl_to_fuseki(rdf_local_copy_path,rdf_local_copy_filename)
                             ttl_upload(rdf_local_copy_path)
                             event_handler.cleanup_original(csv_file_path)
 

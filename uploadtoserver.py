@@ -17,14 +17,3 @@ def upload_ttl_to_fuseki(rdf_local_copy_path,rdf_local_copy_filename):
 
     # Send the HTTP POST request to upload the file
     response = requests.post(fuseki_url, data=ttl_content, headers=headers)
-
-    # Check if the upload was successful
-    if response.status_code == 200:
-        print('File uploaded successfully!')
-        print(f"If:{fuseki_url}")
-    elif response.status_code == 201:
-        print('File uploaded successfully!')
-        print(f"Elif:{fuseki_url}")
-    else:
-        print('Error uploading file:', response.text)
-        print(f"Else:{fuseki_url}")
